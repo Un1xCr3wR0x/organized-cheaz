@@ -173,7 +173,7 @@ void HackThread(HMODULE instance) {
 					if (pGameSceneNode) {
 						char* vecAbsOrigin = (char*)((uintptr_t)pGameSceneNode + offset_m_vecAbsOrigin);
 
-						std::cout << pGameSceneNode << "[VECTOR >>] " << vecAbsOrigin << std::endl;
+						std::cout << pGameSceneNode << " ==> " << vecAbsOrigin << std::endl;
 					}
 					if (EntityHeroTaggedAsVisibleByTeam && EntityHeroTaggedAsVisibleByTeam != 4) {
 						if (EntityHeroTaggedAsVisibleByTeam == 30) {

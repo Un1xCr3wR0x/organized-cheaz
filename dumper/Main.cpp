@@ -92,11 +92,6 @@ void HackThread(HMODULE instance) {
 
 			void* CGameEntitySystem = gameEntitySystemHandler.getGameEntitySystem();
 
-			/*auto GameResourceServiceClient =
-				((uintptr_t(*)(const char*, void*))GetProcAddress(GetModuleHandleA("engine2.dll"),
-					"CreateInterface"))("GameResourceServiceClientV001", nullptr);
-			void* CGameEntitySystem = *(void**)(GameResourceServiceClient + 0x58);*/
-
 			//Function to get an entity by its index
 			const auto _GetEntityByIndex = [CGameEntitySystem](std::size_t index) -> void*
 				{
@@ -105,7 +100,7 @@ void HackThread(HMODULE instance) {
 					const auto list = entitysystem_lists[index / ENTITY_SYSTEM_LIST_SIZE];
 					if (list)
 					{
-						std::cout << CGameEntitySystem << std::endl;
+						
 						const auto entry_index = index % ENTITY_SYSTEM_LIST_SIZE;
 						constexpr auto sizeof_CEntityIdentity = 0x78;
 						const auto identity = (const std::uint8_t*)list + entry_index * sizeof_CEntityIdentity;
@@ -129,6 +124,8 @@ void HackThread(HMODULE instance) {
 					constexpr auto offset_m_hInventory = 0xf30;
 					constexpr auto offset_m_hAbilities = 0xae0;
 					constexpr auto offset_m_fCooldown = 0x580;
+					constexpr auto offset_m_pGameSceneNode = 0x308;
+					constexpr auto offset_m_vecAbsOrigin = 0xd0;
 					constexpr auto high_17_bits = 0b11111111111111111000000000000000;
 					constexpr auto low_15_bits = 0b00000000000000000111111111111111;
 
@@ -155,17 +152,29 @@ void HackThread(HMODULE instance) {
 						{
 							void* EntityHeroAbility = _GetEntityByIndex(((*(CHandle*)((uintptr_t)EntityHero + offset_m_hAbilities + i * 0x4)).index()));
 							if (EntityHeroAbility) {
-								std::cout << "EntityHeroAbility: " << EntityHeroAbility << std::endl;
-								std::cout << "EntityHeroAbility Cooldown: " << *(float*)((uintptr_t)EntityHeroAbility + offset_m_fCooldown) << std::endl;
+								//std::cout << "EntityHeroAbility: " << EntityHeroAbility << std::endl;
+								//std::cout << "EntityHeroAbility Cooldown: " << *(float*)((uintptr_t)EntityHeroAbility + offset_m_fCooldown) << std::endl;
 							}
 						}
 
 					}
 					int EntityHeroTaggedAsVisibleByTeam = *(int*)((uintptr_t)EntityHero + offset_m_iTaggedAsVisibleByTeam);
+					std::cout << CGameEntitySystem << std::endl;
 					std::cout << "Entity: " << Entity << std::endl;
 					std::cout << "Entity Name : " << (char*)((uintptr_t)Entity + offset_m_iszPlayerName) << std::endl;
+					std::cout << "Entity Class Name : " << (char*)((uintptr_t)Entity + 0x10 + 0x20 + 0x0) << std::endl;
 					std::cout << "Entity Assigned Hero : " << ((*(CHandle*)((uintptr_t)Entity + offset_m_hAssignedHero)).index()) << std::endl;
 					std::cout << "EntityHero: " << EntityHero << std::endl;
+					
+
+					// print The Game SceneNode by entity + 0x308
+					void* pGameSceneNode = (char*)((uintptr_t)Entity + offset_m_pGameSceneNode);
+
+					if (pGameSceneNode) {
+						char* vecAbsOrigin = (char*)((uintptr_t)pGameSceneNode + offset_m_vecAbsOrigin);
+
+						std::cout << pGameSceneNode << "[VECTOR >>] " << vecAbsOrigin << std::endl;
+					}
 					if (EntityHeroTaggedAsVisibleByTeam && EntityHeroTaggedAsVisibleByTeam != 4) {
 						if (EntityHeroTaggedAsVisibleByTeam == 30) {
 							std::cout << "is visible: " << EntityHeroTaggedAsVisibleByTeam << std::endl;
@@ -174,7 +183,7 @@ void HackThread(HMODULE instance) {
 							std::cout << "not visible : " << EntityHeroTaggedAsVisibleByTeam << std::endl;
 						}
 					}
-
+					std::cout << "======================================= " << EntityHero << std::endl;
 					OutputDebugStringA(std::format("player {}({}) controls hero indexed {}\n",
 						(char*)((uintptr_t)Entity + offset_m_iszPlayerName),
 						Entity, ((*(CHandle*)((uintptr_t)Entity + offset_m_hAssignedHero)).index())).data());

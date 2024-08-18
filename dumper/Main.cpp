@@ -3,6 +3,7 @@
 #include <chrono>
 #include <unordered_map>
 #include <format>
+#include "src/CEntityIdentity.h"
 class GameResourceServiceClientHandler {
 private:
 	uintptr_t gameResourceServiceClient;
@@ -93,7 +94,7 @@ void HackThread(HMODULE instance) {
 			void* CGameEntitySystem = gameEntitySystemHandler.getGameEntitySystem();
 
 			//Function to get an entity by its index
-			const auto _GetEntityByIndex = [CGameEntitySystem](std::size_t index) -> void*
+			const auto _GetEntityByIndex = [CGameEntitySystem](std::size_t index) -> CEntityIdentity*
 				{
 					constexpr auto ENTITY_SYSTEM_LIST_SIZE = 512;
 					const auto entitysystem_lists = (const void**)((const std::uint8_t*)CGameEntitySystem + 0x10);
@@ -106,7 +107,7 @@ void HackThread(HMODULE instance) {
 						const auto identity = (const std::uint8_t*)list + entry_index * sizeof_CEntityIdentity;
 						if (identity)
 						{
-							return *(void**)identity;
+							return *(CEntityIdentity**)identity;
 						}
 					}
 					return nullptr;
@@ -115,7 +116,7 @@ void HackThread(HMODULE instance) {
 			//Loop through entities and process them
 			for (std::size_t index = 1; index <= 64; ++index)
 			{
-				void* Entity = _GetEntityByIndex(index);
+				CEntityIdentity* Entity = _GetEntityByIndex(index);
 				if (Entity)
 				{
 					constexpr auto offset_m_iszPlayerName = 0x628;
@@ -145,7 +146,6 @@ void HackThread(HMODULE instance) {
 							return value != -1;
 						}
 					};
-
 					void* EntityHero = _GetEntityByIndex(((*(CHandle*)((uintptr_t)Entity + offset_m_hAssignedHero)).index()));
 					{
 						for (int i = 0; i < 35; i++)
@@ -183,10 +183,7 @@ void HackThread(HMODULE instance) {
 							std::cout << "not visible : " << EntityHeroTaggedAsVisibleByTeam << std::endl;
 						}
 					}
-					std::cout << "======================================= " << EntityHero << std::endl;
-					OutputDebugStringA(std::format("player {}({}) controls hero indexed {}\n",
-						(char*)((uintptr_t)Entity + offset_m_iszPlayerName),
-						Entity, ((*(CHandle*)((uintptr_t)Entity + offset_m_hAssignedHero)).index())).data());
+
 				}
 			}
 		}

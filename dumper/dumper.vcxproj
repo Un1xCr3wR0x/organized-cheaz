@@ -131,6 +131,12 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\CEntityIdentity.h" />
+    <ClInclude Include="src\CGameEntitySystem.h" />
+    <ClInclude Include="src\Chandle.h" />
+    <ClInclude Include="src\EntityIndex.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

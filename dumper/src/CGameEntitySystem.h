@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
-#define C_BaseEntity void
-#define CEntityIdentities void
+#include "CEntityIdentity.h"
 #define MAX_ENTITIES_IN_LIST 512
 #define MAX_ENTITY_LISTS 64 // 0x3F
 #define MAX_TOTAL_ENTITIES MAX_ENTITIES_IN_LIST * MAX_ENTITY_LISTS // 0x8000
